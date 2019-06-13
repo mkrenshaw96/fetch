@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         owner_id: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         posted_by_username: {
@@ -13,10 +13,18 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         likes: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         comments: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        caption: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        user_location: {
             type: DataTypes.STRING,
             allowNull: true
         }

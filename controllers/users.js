@@ -59,11 +59,11 @@ router.post('/login', (req, res) => {
                         sessionToken: token
                     })
                 } else {
-                    res.status(500).json({ error: err })
+                    res.status(500).json({ error: err, message: 'PASSWORDS DO NOT MATCH' })
                 }
             })
         })
-        .catch(err => res.status(500).json({ error: err }))
+        .catch(err => res.status(500).json({ error: err, message: 'USERNAME IS NOT FOUND' }))
 })
 router.put('/update/:id', Auth, (req, res) => {
     User.update(req.body, {
