@@ -1,32 +1,22 @@
 const router = require("express").Router();
-const User = require('../db').import('../models/user-model');
+const Models = require('../models/models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Auth = require('../middleware/auth');
-router.get('/', Auth, (req, res) => {
-    User.findAll()
-        .then(foundUsers => res.status(200).json({
-            "ALL USERS": {
-                foundUsers
-            }
-        }))
+router.get('/all', Auth, (req, res) => {
+    Models.User.findAll()
+        .then(foundUsers => res.status(200).json({ foundUsers }))
         .catch(err => console.log(err))
 })
-// router.get('/', (req, res) => res.send('THIS IS WORKING'));
 router.post('/signup', (req, res) => {
-
-    User.create({
+    Models.User.create({
         firstname: req.body.user.firstname,
         lastname: req.body.user.lastname,
-        email: req.body.user.lastname,
+        email: req.body.user.email,
         username: req.body.user.username,
-        password: bcrypt.hashSync(req.body.user.password, 10)
+        password: bcrypt.hashSync(req.body.user.password, 10),
     })
         .then(createdUser => {
-            if (!createdUser) {
-                console.log('user not created')
-            }
-            console.log(createdUser)
             let token = jwt.sign({
                 id: createdUser.id
             }, process.env.JWT_SECRET, {
@@ -38,12 +28,13 @@ router.post('/signup', (req, res) => {
                 sessionToken: token
             })
         })
-        .catch(err => res.status(500).json({ error: err }))
-        .catch(err => console.log(err))
+        .catch(err => res.status(500).json({ 'ERROR CREATING USER': err }))
 })
 router.post('/login', (req, res) => {
-    User.findOne({
-        username: req.body.user.username
+    Models.User.findOne({
+        where: {
+            username: req.body.user.username
+        }
     })
         .then(foundUser => {
             bcrypt.compare(req.body.user.password, foundUser.password, (err, match) => {
@@ -59,14 +50,14 @@ router.post('/login', (req, res) => {
                         sessionToken: token
                     })
                 } else {
-                    res.status(500).json({ error: err, message: 'PASSWORDS DO NOT MATCH' })
+                    res.status(401).json({ error: err, message: 'PASSWORDS DO NOT MATCH' })
                 }
             })
         })
-        .catch(err => res.status(500).json({ error: err, message: 'USERNAME IS NOT FOUND' }))
+        .catch(err => res.status(404).json({ error: err, message: 'USERNAME IS NOT FOUND' }))
 })
 router.put('/update/:id', Auth, (req, res) => {
-    User.update(req.body, {
+    Models.User.update(req.body, {
         where: {
             id: req.params.id
         },
@@ -85,7 +76,7 @@ router.put('/update/:id', Auth, (req, res) => {
         })
 })
 router.delete('/delete/:id', Auth, (req, res) => {
-    User.findOne({
+    Models.User.findOne({
         where: {
             id: req.params.id
         }
@@ -97,5 +88,14 @@ router.delete('/delete/:id', Auth, (req, res) => {
         .catch(err => {
             throw err
         })
+})
+router.get('/find/:id', Auth, (req, res) => {
+    Models.User.findAll({
+        where: {
+            id: req.params.id
+        }
+    })
+        .then(foundUser => res.status(200).json(foundUser))
+        .catch(err => res.status(500).json(err))
 })
 module.exports = router;

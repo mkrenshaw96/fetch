@@ -1,12 +1,21 @@
 require('dotenv').config();
-const express = require('express');
-const app = express();
-const postController = require('./controllers/posts');
-const userController = require('./controllers/users');
-require('./db').sync();
-app.use(express.json())
+const express = require('express'),
+    app = express(),
+    db = require('./db').sync(),
+    userController = require('./controllers/user'),
+    postController = require('./controllers/post'),
+    followingController = require('./controllers/following'),
+    commentController = require('./controllers/comment'),
+    likeController = require('./controllers/like'),
+    profileController = require('./controllers/profile'),
+    feedController = require('./controllers/feed');
 app.use(require('./middleware/headers'));
+app.use(express.json());
 app.use('/user', userController);
-app.use('/post', postController);
-app.get('/', (req, res) => res.send('THIS IS A TEST GET REQUEST'));
-app.listen(process.env.PORT, () => console.log(`PORT IS RUNNING ON ${process.env.PORT}`))
+app.use('/media', postController);
+app.use('/follow', followingController);
+app.use('/comment', commentController);
+app.use('/like', likeController);
+app.use('/profile', profileController)
+app.use('/feed', feedController);
+app.listen(process.env.PORT, () => console.log(`APP IS LISTENING ON ${process.env.PORT}`))

@@ -1,10 +1,23 @@
 const Sequelize = require('sequelize');
-const db = new Sequelize(process.env.NAME, 'postgres', process.env.PASS, {
+const sequelize = new Sequelize(process.env.NAME, 'postgres', process.env.PASS, {
     host: 'localhost',
     dialect: 'postgres'
 })
-db.authenticate()
-    .then(() => console.log('POSTGRES DATABSE IS NOW CONNECTED'))
+sequelize.authenticate()
+    .then(() => console.log('POSTGRES DB IS NOT CONNECTED'))
     .catch(err => console.log(err))
 
-module.exports = db;
+const Models = {
+    User: sequelize.import('./models/user'),
+    Post: sequelize.import('./models/post'),
+    Message: sequelize.import('./models/message'),
+    Following: sequelize.import('./models/following'),
+    Comments: sequelize.import('./models/comments'),
+    Likes: sequelize.import('./models/likes'),
+}
+Object.keys(Models).forEach((modelName) => {
+    if ('associate' in Models[modelName]) {
+        Models[modelName].associate(Models);
+    }
+})
+module.exports = sequelize
