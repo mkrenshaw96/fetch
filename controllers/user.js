@@ -15,6 +15,9 @@ router.post('/signup', (req, res) => {
         email: req.body.user.email,
         username: req.body.user.username,
         password: bcrypt.hashSync(req.body.user.password, 10),
+        mediaCount: 0,
+        followersCount: 0,
+        followingCount: 0
     })
         .then(createdUser => {
             let token = jwt.sign({

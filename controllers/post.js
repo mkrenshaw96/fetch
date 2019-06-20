@@ -43,6 +43,22 @@ router.post('/post', Auth, upload.single('image'), (req, res) => {
         })
         .catch(err => res.status(500).json(err))
 });
+//INCREMENT MEDIA COUNT ON POST
+router.put('/increment-media-count', Auth, (req, res) => {
+    Models.User.findOne({
+        where: {
+            id: req.user.id
+        }
+    })
+        .then(foundUser => {
+            foundUser.update({
+                mediaCount: foundUser.mediaCount + 1
+            })
+                .then(updated => res.status(200).json('Incremented'))
+                .catch(err => res.status(500).json(err))
+        })
+        .catch(err => res.status(500).json(err))
+})
 //GET ALL POST DATA FROM A SPECIFIED USER
 router.get('/user-post', Auth, (req, res) => {
     Models.User.findOne({
