@@ -3,6 +3,7 @@ const router = require('express').Router(),
 const Models = require('../models/models');
 const Following = require('../db').import('../models/following');
 const User = require('../db').import('../models/user');
+const Post = require('../db').import('../models/post');
 //FOLLOW ANOTHER USER
 router.post('/', Auth, (req, res) => {
     Models.User.findOne({
@@ -53,6 +54,26 @@ router.get('/im-following', Auth, (req, res) => {
         })
         .catch(err => res.status(500).json(err))
 })
+//GET USERS IM FOLLOWING THROUGH URL PARAM
+router.get('/profile/im-following/:id', Auth, (req, res) => {
+    Following.findAll({
+        where: {
+            userId: req.params.id
+        }
+    })
+        .then(foundFollowing => {
+            const keyIds = foundFollowing.map((keys) => {
+                return keys.followingUserId
+            })
+            User.findAll({
+                where: {
+                    id: keyIds
+                }
+            })
+                .then(found => res.status(200).json(found))
+        })
+        .catch(err => res.status(500).json(err))
+})
 //GET MY FOLLOWERS
 router.get('/following-me', Auth, (req, res) => {
     User.findOne({
@@ -71,4 +92,25 @@ router.get('/following-me', Auth, (req, res) => {
         })
         .catch(err => res.status(500).json(err))
 })
+//GET MY FOLLOWERS THROUGH URL PARAM
+router.get('/profile/following-me/:id', Auth, (req, res) => {
+    Following.findAll({
+        where: {
+            followingUserId: req.params.id
+        }
+    })
+        .then(foundFollowing => {
+            const keyIds = foundFollowing.map((keys) => {
+                return keys.followingUserId
+            })
+            User.findAll({
+                where: {
+                    id: keyIds
+                }
+            })
+                .then(found => res.status(200).json(found))
+        })
+        .catch(err => res.status(500).json(err))
+})
+//GET MY FOLLOWERS THROUGH URL PARAM
 module.exports = router;

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../db').import('../models/user');
 const Auth = (req, res, next) => {
-    let token = req.headers.authorization;
+    const token = req.headers.authorization;
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (!err && decoded) {
             User.findOne({

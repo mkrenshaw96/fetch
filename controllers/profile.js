@@ -113,4 +113,14 @@ router.get('/my-profile', Auth, (req, res) => {
         .then(foundProfile => res.status(200).json(foundProfile))
         .catch(err => res.status(500).json(err))
 })
+//
+router.get('/user-profile/:id', Auth, (req, res) => {
+    User.findOne({
+        where: {
+            id: req.params.id
+        }
+    })
+        .then(foundProfile => res.status(200).json(foundProfile))
+        .catch(err => res.status(500).json(err))
+})
 module.exports = router;
