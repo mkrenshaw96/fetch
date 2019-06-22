@@ -95,7 +95,7 @@ router.delete('/delete/:id', Auth, (req, res) => {
 router.get('/find/:id', Auth, (req, res) => {
     Models.User.findAll({
         where: {
-            id: req.params.id
+            id: [req.params.id]
         }
     })
         .then(foundUser => res.status(200).json(foundUser))

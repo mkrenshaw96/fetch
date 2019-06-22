@@ -41,7 +41,12 @@ router.get('/all-post-comments/:id', Auth, (req, res) => {
             Comment.findAll({
                 where: {
                     postId: foundPost.id
-                }
+                }, include:
+                {
+                    model: User
+                }, order: [
+                    ['createdAt', 'DESC']
+                ]
             })
                 .then(foundComments => res.status(200).json(foundComments))
                 .catch(err => res.status(500).json(err))

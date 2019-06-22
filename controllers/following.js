@@ -20,6 +20,22 @@ router.post('/', Auth, (req, res) => {
         })
         .catch(err => res.status(500).json(err))
 })
+//FOLLOW ANOTHER USER THROUGH URL PARARM
+router.post('/refollow/:id', Auth, (req, res) => {
+    Models.User.findOne({
+        where: {
+            id: req.user.id
+        }
+    })
+        .then(foundUser => {
+            foundUser.createFollowing({
+                followingUserId: req.params.id
+            })
+                .then(created => res.status(200).json(created))
+                .catch(err => res.status(500).json(err))
+        })
+        .catch(err => res.status(500).json(err))
+})
 //FOLLOW YOURSELF WHEN INITIAL PROFILE CREATION
 router.post('/follow-myself', Auth, (req, res) => {
     Models.User.findOne({
@@ -76,19 +92,15 @@ router.get('/profile/im-following/:id', Auth, (req, res) => {
 })
 //GET MY FOLLOWERS
 router.get('/following-me', Auth, (req, res) => {
-    User.findOne({
+    Following.findAll({
         where: {
-            id: req.user.id
+            followingUserId: req.user.id
+        }, include: {
+            model: User
         }
     })
-        .then(foundUser => {
-            Following.findAll({
-                where: {
-                    followingUserId: foundUser.id
-                }
-            })
-                .then(foundFollowers => res.status(200).json(foundFollowers))
-                .catch(err => res.status(500).json(err))
+        .then(foundFollowers => {
+            res.status(200).json(foundFollowers)
         })
         .catch(err => res.status(500).json(err))
 })
@@ -97,20 +109,24 @@ router.get('/profile/following-me/:id', Auth, (req, res) => {
     Following.findAll({
         where: {
             followingUserId: req.params.id
-        }
+        }, include: { model: User }
     })
         .then(foundFollowing => {
-            const keyIds = foundFollowing.map((keys) => {
-                return keys.followingUserId
-            })
-            User.findAll({
-                where: {
-                    id: keyIds
-                }
-            })
-                .then(found => res.status(200).json(found))
+            res.status(200).json(foundFollowing)
         })
         .catch(err => res.status(500).json(err))
 })
-//GET MY FOLLOWERS THROUGH URL PARAM
+//UNFOLLOW A USE THROUGH URL PARAM
+router.delete('/unfollow/:id', Auth, (req, res) => {
+    Following.findOne({
+        where: {
+            userId: req.user.id,
+            followingUserId: req.params.id
+        }
+    })
+        .then(found => found.destroy())
+        .then(() => res.status(200).json({ 'MESSAGE': 'USER UNFOLLOWED' }))
+        .catch(err => res.status(500).json(err))
+        .catch(err => res.status(500).json(err))
+})
 module.exports = router;

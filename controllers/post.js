@@ -3,7 +3,8 @@ const Models = require('../models/models'),
     multer = require('multer'),
     Auth = require('../middleware/auth'),
     multerS3 = require('multer-s3'),
-    AWS = require('aws-sdk');
+    AWS = require('aws-sdk'),
+    User = require('../models/user');
 const ACCESS = new AWS.S3({
     accessKeyId: process.env.ACCESS_KEY_ID,
     secretAccessKey: process.env.SECRET_ACCESS_KEY,
@@ -129,5 +130,16 @@ router.put('/unlike/:id', Auth, (req, res) => {
                 .catch(err => res.status(500).json(err))
         })
         .catch(err => res.status(500).json(err))
+})
+router.get('/find/:id', Auth, (req, res) => {
+    Models.Post.findAll({
+        where: {
+            id: req.params.id
+        }
+    })
+        .then(foundPost => {
+            res.status(200).json(foundPost)
+        })
+        .catch(err => res.status(500).json('ERROR', err))
 })
 module.exports = router;

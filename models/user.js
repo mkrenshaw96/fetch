@@ -60,10 +60,6 @@ module.exports = (sequelize, DataTypes) => {
             as: 'likes',
             foreignKey: 'userId'
         })
-        // user.hasMany(models.message, {
-        //     as: 'message',
-        //     foreignKey: 'userId'
-        // })
     }
     return user;
 }
