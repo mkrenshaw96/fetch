@@ -22,23 +22,32 @@ const upload = multer({
         }
     })
 })
-// router.put('/update', Auth, upload.single('image'), (req, res) => {
-//     User.findOne({
-//         where: {
-//             id: req.user.id
-//         }
-//     })
-//         .then(foundUser => {
-//             foundUser.update({
-//                 profilePicUrl: req.file.location,
-//                 bio: req.body.bio,
-//                 name: req.body.name
-//             })
-//                 .then(updatedUser => res.status(200).json(updatedUser))
-//                 .catch(err => res.status(500).json(err))
-//         })
-//         .catch(err => res.status(500).json(err))
-// })
+router.put('/edit-profile', Auth, (req, res) => {
+    User.findOne({
+        where: {
+            id: req.user.id
+        }
+    })
+        .then(foundUser => {
+            foundUser.update({
+                bio: req.body.bio,
+                name: req.body.name,
+                username: req.body.username
+            }, {
+                    returning: true,
+                    fields: [
+                        req.body.bio !== undefined ? 'bio' : undefined,
+                        req.body.name !== undefined ? 'name' : undefined,
+                        req.body.username !== undefined ? 'username' : undefined
+                    ]
+                })
+                .then(updatedUser => res.status(200).json(updatedUser))
+                // .catch(err => res.status(500).json(err))
+                .catch(err => console.log(err))
+        })
+        // .catch(err => res.status(500).json(err))
+        .catch(err => console.log(err))
+})
 router.put('/update-profile-photo', Auth, upload.single('image'), (req, res) => {
     User.findOne({
         where: {
