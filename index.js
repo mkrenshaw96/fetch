@@ -8,7 +8,8 @@ const express = require('express'),
     commentController = require('./controllers/comment'),
     likeController = require('./controllers/like'),
     profileController = require('./controllers/profile'),
-    feedController = require('./controllers/feed');
+    feedController = require('./controllers/feed'),
+    searchController = require('./controllers/search');
 app.use(require('./middleware/headers'));
 app.use(express.json());
 app.use('/user', userController);
@@ -18,4 +19,5 @@ app.use('/comment', commentController);
 app.use('/like', likeController);
 app.use('/profile', profileController)
 app.use('/feed', feedController);
+app.use('/search', searchController);
 app.listen(process.env.PORT, () => console.log(`APP IS LISTENING ON ${process.env.PORT}`))
