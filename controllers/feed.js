@@ -25,8 +25,7 @@ router.get('/mine', Auth, (req, res) => {
                         },
                         order: [
                             ['createdAt', 'DESC']
-                        ],
-                        limit: 3
+                        ]
                     })
                         .then(foundPosts => res.status(200).json(foundPosts))
                         .catch(err => console.log(err))

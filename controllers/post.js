@@ -94,7 +94,13 @@ router.get('/profile/:id', Auth, (req, res) => {
 })
 //GET ALL POST DATA FROM ALL USERS 
 router.get('/all-users-post', Auth, (req, res) => {
-    Models.Post.findAll()
+    Models.Post.findAll({
+        order: [
+            ['createdAt', 'DESC']
+        ]
+    }, {
+            limit: 20
+        })
         .then(found => res.status(200).json(found))
         .catch(err => res.status(500).json(err))
 })

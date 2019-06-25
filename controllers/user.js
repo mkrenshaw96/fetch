@@ -3,6 +3,7 @@ const Models = require('../models/models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Auth = require('../middleware/auth');
+const Following = require('../models/following')
 router.get('/all', Auth, (req, res) => {
     Models.User.findAll()
         .then(foundUsers => res.status(200).json({ foundUsers }))
@@ -20,15 +21,21 @@ router.post('/signup', (req, res) => {
         followingCount: 0
     })
         .then(createdUser => {
-            let token = jwt.sign({
-                id: createdUser.id
-            }, process.env.JWT_SECRET, {
-                    expiresIn: 60 * 60 * 24
+            createdUser.createFollowing({
+                followingUserId: createdUser.id
+            })
+                .then(created => {
+                    let token = jwt.sign({
+                        id: createdUser.id
+                    }, process.env.JWT_SECRET, {
+                            expiresIn: 60 * 60 * 24
+                        })
+                    res.status(200).json({
+                        user: createdUser,
+                        message: 'USER SUCCESSFULLY CREATED',
+                        sessionToken: token
                 })
-            res.status(200).json({
-                user: createdUser,
-                message: 'USER SUCCESSFULLY CREATED',
-                sessionToken: token
+                .catch(err => res.status(500).json(err))
             })
         })
         .catch(err => res.status(500).json({ 'ERROR CREATING USER': err }))

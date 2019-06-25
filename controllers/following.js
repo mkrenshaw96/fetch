@@ -4,6 +4,7 @@ const Models = require('../models/models');
 const Following = require('../db').import('../models/following');
 const User = require('../db').import('../models/user');
 const Post = require('../db').import('../models/post');
+const Comment = require('../db').import('../models/comments')
 //FOLLOW ANOTHER USER
 router.post('/', Auth, (req, res) => {
     Models.User.findOne({
@@ -30,22 +31,6 @@ router.post('/refollow/:id', Auth, (req, res) => {
         .then(foundUser => {
             foundUser.createFollowing({
                 followingUserId: req.params.id
-            })
-                .then(created => res.status(200).json(created))
-                .catch(err => res.status(500).json(err))
-        })
-        .catch(err => res.status(500).json(err))
-})
-//FOLLOW YOURSELF WHEN INITIAL PROFILE CREATION
-router.post('/follow-myself', Auth, (req, res) => {
-    Models.User.findOne({
-        where: {
-            id: req.user.id
-        }
-    })
-        .then(foundUser => {
-            foundUser.createFollowing({
-                followingUserId: foundUser.id
             })
                 .then(created => res.status(200).json(created))
                 .catch(err => res.status(500).json(err))
@@ -129,4 +114,28 @@ router.delete('/unfollow/:id', Auth, (req, res) => {
         .catch(err => res.status(500).json(err))
         .catch(err => res.status(500).json(err))
 })
+
+//GET USERS IM FOLLOWING THROUGH URL PARAM
+// router.get('/profile/test/:id', Auth, (req, res) => {
+//     Following.findAll({
+//         where: {
+//             userId: req.params.id
+//         }, include: { model: User, Post, Comment }
+//     })
+//         .then(foundFollowing => {
+//             res.status(500).json(foundFollowing)
+//             // const keyIds = foundFollowing.map((keys) => {
+//             //     return keys.followingUserId
+//             // })
+//             // User.findAll({
+//             //     where: {
+//             //         id: keyIds
+//             //     }
+//             // })
+//             //     .then(found => res.status(200).json(found))
+//         })
+//         .catch(err => res.status(500).json(err))
+// })
+
+
 module.exports = router;
