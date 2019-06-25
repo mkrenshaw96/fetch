@@ -13,7 +13,7 @@ const ACCESS = new AWS.S3({
 const upload = multer({
     storage: multerS3({
         s3: ACCESS,
-        bucket: 'fetch-api-images',
+        bucket: process.env.BUCKET,
         acl: 'public-read',
         metadata: (req, file, cb) => {
             cb(null, { fieldName: file.fieldname });
